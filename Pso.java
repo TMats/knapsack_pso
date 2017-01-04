@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 class Particle{
     // Consts
-    public static double W = 0.3; // -0.2
-    public static double C1 = 0.6; //1.2
-    public static double C2 = 0.6; //1.2
+    public static double W;
+    public static double C1;
+    public static double C2;
+    public static int dataset_id;
 
     // define 'global_best's
     public static int[] global_best_x;
@@ -23,7 +24,7 @@ class Particle{
         this.dim = dim;
         x = TestFunctions.init_x(dim);
         v = new double[dim];
-        fit = TestFunctions.get_fit(x);
+        fit = TestFunctions.get_fit(dataset_id,x);
         best_x = Arrays.copyOf(x,x.length);
         best_fit = fit;
     }
@@ -42,7 +43,7 @@ class Particle{
         }
         x = new_x;
         v = new_v;
-        fit = TestFunctions.get_fit(x);
+        fit = TestFunctions.get_fit(dataset_id,x);
     }
 
     void update_best(){
@@ -61,53 +62,50 @@ class Particle{
 
 
 public class Pso{
-    public static double[] execute(int N, int D, int T){
+    public static int[] execute(int N, int T, int dataset_id, double[] params){
+        Particle.dataset_id = dataset_id;
+        Particle.W =params[0];
+        Particle.C1=params[1];
+        Particle.C2=params[2];
+
         Particle.global_best_x = new int[N];
         Particle.global_best_fit = 0;
 
+        int D = TestFunctions.get_weight(dataset_id).length;
         ArrayList<Particle> particle_list = new ArrayList<Particle>();
         for(int i=0;i<N;i++){
             Particle part = new Particle(D);
             particle_list.add(part);
             particle_list.get(i).update_best();
-            //print debug
-            if(i==0){
-                System.out.println(Arrays.toString(particle_list.get(i).get_x()));
-                System.out.println(particle_list.get(i).get_fit());
-            }
         }
-
-        double[] result = new double[T+1];
-        result[0] = Particle.global_best_fit;
 
         for(int t=1;t<T+1;t++){
             for(int i=0;i<N;i++){
                 particle_list.get(i).update();
-                //print debug
-                if(i==0){
-                    System.out.println(Arrays.toString(particle_list.get(i).get_x()));
-                    System.out.println(particle_list.get(i).get_fit());
-                }
                 particle_list.get(i).update_best();
             }
-            result[t] = Particle.global_best_fit;
         }
-        System.out.println("num_particles:"+N+" num_dims:"+D+" num_iters:"+T);
-        System.out.println(Arrays.toString(Particle.global_best_x));
-        System.out.println(Particle.global_best_fit);
-        System.out.println();
-        return result;
+//        System.out.println("num_particles:"+N+" num_dims:"+D+" num_iters:"+T);
+//        System.out.println("--optimal--");
+//        System.out.println(Arrays.toString(TestFunctions.get_optimal(dataset_id)));
+//        System.out.println("--result--");
+//        System.out.println(Arrays.toString(Particle.global_best_x));
+//        System.out.println(Particle.global_best_fit);
+//        System.out.println();
+        return Particle.global_best_x;
     }
 
     public static void main(String[] args) {
         // number of particles
         int N = 10;
-        // dimension
-        int D = 7;
         // number of iteration
         int T = 10;
+        // parameters
+        double[] params ={0.3,0.6,0.6};
+        // dataset
+        int dataset_id = 4;
 
-        double[] result = execute(N,D,T);
+        int[] result = execute(N,T,dataset_id,params);
     }
 
 }

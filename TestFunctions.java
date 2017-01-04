@@ -1,4 +1,5 @@
-import java.util.Random;
+import java.io.*;
+import java.util.*;
 
 public class TestFunctions{
 
@@ -13,7 +14,6 @@ public class TestFunctions{
 
         return x;
     }
-
 
     public static double sigmoid(double a) {
         return 1.0/(1.0+Math.exp((-1.0)*a));
@@ -35,14 +35,12 @@ public class TestFunctions{
         return x;
     }
 
-
-    // calcuate function value
-    // public static double get_fit(double[] weight, double[] reward, double limit, double[] x){
-    public static double get_fit(int[] x){
+    // calcuate function fitness
+    public static double get_fit(int dataset_id, int[] x){
         int dim = x.length;
-        double limit = 50;
-        double[] weight ={31,10,20,19,4,3,6};
-        double[] reward ={70,20,39,37,7,5,10};
+        double limit = get_limit(dataset_id);
+        double[] weight = get_weight(dataset_id);
+        double[] reward = get_profit(dataset_id);
 
         double sum_weight = 0;
         double sum_reward = 0;
@@ -56,6 +54,62 @@ public class TestFunctions{
         }
 
         return sum_reward;
+    }
+
+
+    public static String[] fileRead(String filePath) {
+        List<String> list = new ArrayList<String>();
+        try {
+            File f = new File(filePath);
+            BufferedReader br = new BufferedReader(new FileReader(f));
+
+            String line = br.readLine();
+            while (line != null) {
+                list.add(line);
+                line = br.readLine();
+            }
+            br.close();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        String[] array = list.toArray(new String[list.size()]);
+        return array;
+    }
+
+    public static double[] get_weight(int dataset_id){
+        String filepath = "dataset/p0"+dataset_id+"_w.txt";
+        String[] ar = fileRead(filepath);
+        double[] weight = new double[ar.length];
+        for(int i=0;i<ar.length;i++){
+            weight[i] = Double.valueOf(ar[i]);
+        }
+        return weight;
+    }
+
+    public static double[] get_profit(int dataset_id){
+        String filepath = "dataset/p0"+dataset_id+"_p.txt";
+        String[] ar = fileRead(filepath);
+        double[] profit = new double[ar.length];
+        for(int i=0;i<ar.length;i++){
+            profit[i] = Double.valueOf(ar[i]);
+        }
+        return profit;
+    }
+
+    public static double get_limit(int dataset_id){
+        String filepath = "dataset/p0"+dataset_id+"_c.txt";
+        String[] ar = fileRead(filepath);
+        return Double.valueOf(ar[0]);
+    }
+
+    public static int[] get_optimal(int dataset_id){
+        String filepath = "dataset/p0"+dataset_id+"_s.txt";
+        String[] ar = fileRead(filepath);
+        int[] optimal = new int[ar.length];
+        for(int i=0;i<ar.length;i++){
+            optimal[i] = Integer.valueOf(ar[i]);
+        }
+        return optimal;
     }
 
 }
