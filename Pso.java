@@ -85,13 +85,6 @@ public class Pso{
                 particle_list.get(i).update_best();
             }
         }
-//        System.out.println("num_particles:"+N+" num_dims:"+D+" num_iters:"+T);
-//        System.out.println("--optimal--");
-//        System.out.println(Arrays.toString(TestFunctions.get_optimal(dataset_id)));
-//        System.out.println("--result--");
-//        System.out.println(Arrays.toString(Particle.global_best_x));
-//        System.out.println(Particle.global_best_fit);
-//        System.out.println();
         return Particle.global_best_x;
     }
 
